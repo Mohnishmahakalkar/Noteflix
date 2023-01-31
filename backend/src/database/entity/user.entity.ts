@@ -23,7 +23,5 @@ import {
 
     @Column()
     password : string
-  
-    @OneToMany(() => Note,(note)=>note.user)
-    notes: Note[]
+   
   }

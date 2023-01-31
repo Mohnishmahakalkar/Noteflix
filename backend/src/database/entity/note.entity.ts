@@ -1,20 +1,30 @@
-import { Column, Entity, PrimaryGeneratedColumn ,ManyToOne} from "typeorm"
-import { User } from "./user.entity"
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
+import { User } from "./user.entity";
 
 @Entity()
 export class Note {
   @PrimaryGeneratedColumn()
-  note_id: number
+  note_id: number;
 
   @Column()
-  note:string
+  note: string;
 
   @Column()
-  status : string
+  status: string;
 
   @Column()
-  isdeleted : boolean
+  isdeleted: boolean;
 
-  @ManyToOne(()=> User , (user)=> user.notes)
-  user: User
+  @Column({ name: "user_Id" })
+  userId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "user_Id" })
+  user: User;
 }
