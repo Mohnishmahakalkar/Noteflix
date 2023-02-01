@@ -4,6 +4,10 @@ import { AppDataSource } from "./database/datasource";
 import { Note } from "./database/entity/note.entity";
 import { User } from "./database/entity/user.entity";
 import bodyParser from "body-parser";
+import { getGoogleAuthURL , getTokens } from "./oauth/oauth";
+import {REDIRECT_URI,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,SERVER_ROOT_URI,COOKIE_NAME,UI_ROOT_URI,JWT_SECRET} from "./config"
+import axios from "axios";
+const jwt = require("jsonwebtoken")
 
 AppDataSource.initialize()
   .then(() => {
@@ -16,6 +20,48 @@ AppDataSource.initialize()
 const app = express();
 const port = 4000;
 app.use(bodyParser.json());
+
+/* generates url for  */
+app.get("/notesapp/auth/google/url", (req:Request, res:Response) => {
+  return res.redirect(getGoogleAuthURL());
+});
+
+/* getting the token and setting the cookies to frontend */
+app.get(`/${REDIRECT_URI}`, async (req:any, res:any) => {
+  const code = req.query.code;
+
+  const { id_token, access_token } = await getTokens({
+    code,
+    clientId: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+    redirectUri: `${SERVER_ROOT_URI}/${REDIRECT_URI}`,
+  });
+
+  const googleUser = await axios
+    .get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+      {
+        headers: {
+          Authorization: `Bearer ${id_token}`,
+        },
+      }
+    )
+    .then((res) => res.data)
+    .catch((error) => {
+      console.error(`Failed to fetch user`);
+      throw new Error(error.message);
+    });
+
+  const token = jwt.sign(googleUser, JWT_SECRET);
+
+  res.cookie(COOKIE_NAME, token, {
+    maxAge: 900000,
+    httpOnly: true,
+    secure: false,
+  });
+
+  res.redirect(UI_ROOT_URI);
+});
 
 /* signup user */
 app.post("/notesapp/signup", async function (req: Request, res: Response) {
