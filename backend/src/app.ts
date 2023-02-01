@@ -60,22 +60,37 @@ app.put("/notesapp/user/:id", async function (req: Request, res: Response) {
   });
 
   if (user) {
-    const { fname, lname, email ,password} = user;
+    const { fname, lname, email, password } = user;
     const updateUser = {
       fname: req.body.fname || fname,
       lname: req.body.lname || lname,
       email: req.body.email || email,
-      password : req.body.password || password
+      password: req.body.password || password,
     };
 
-    const updatedUser = await AppDataSource.getRepository(User).update({
-      user_id: Number(req.params.id)
-    } ,updateUser);
-    
+    const updatedUser = await AppDataSource.getRepository(User).update(
+      {
+        user_id: Number(req.params.id),
+      },
+      updateUser
+    );
+
     res.send("user data updated");
   } else {
     res.send("user not found");
   }
+});
+
+/*delete user and notes by userid*/
+app.delete("/notesapp/user/:id", async function (req: Request, res: Response) {
+  const ID = req.params.id;
+  const deletedNotes = await AppDataSource.getRepository(Note).delete({
+    userId: ID,
+  });
+  const deletedUser = await AppDataSource.getRepository(User).delete({
+    user_id: Number(ID),
+  });
+  res.send("user and notes for that user deleted");
 });
 
 /* get all notes for user with ID */
@@ -104,7 +119,7 @@ app.post(
 
     const results = await AppDataSource.getRepository(Note).save(createNote);
 
-    res.send(results);
+    return res.send(results);
   }
 );
 
@@ -112,7 +127,10 @@ app.post(
 app.delete(
   "/notesapp/notes/:notesId",
   async function (req: Request, res: Response) {
-    console.log("from delete");
+    const deletedNotes = await AppDataSource.getRepository(Note).delete({
+      note_id: parseInt(req.params.notesId),
+    });
+    res.send(deletedNotes);
   }
 );
 
