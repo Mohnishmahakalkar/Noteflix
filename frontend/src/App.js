@@ -1,12 +1,17 @@
-import { useCookies } from "react-cookie";
-
+import "./css/index.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { UserPage } from "./components/UserPage";
+import { LoginPage } from "./components/LoginPage";
 function App() {
-  const cook  = useCookies('auth_token');
-  console.log(cook.pop)
   return (
-   <div>
-    <h1>logged in successful</h1>
-   </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/notesapp" element={<UserPage/>} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
