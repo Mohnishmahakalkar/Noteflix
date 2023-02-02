@@ -4,10 +4,18 @@ import { AppDataSource } from "./database/datasource";
 import { Note } from "./database/entity/note.entity";
 import { User } from "./database/entity/user.entity";
 import bodyParser from "body-parser";
-import { getGoogleAuthURL , getTokens } from "./oauth/oauth";
-import {REDIRECT_URI,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,SERVER_ROOT_URI,COOKIE_NAME,UI_ROOT_URI,JWT_SECRET} from "./config"
+import { getGoogleAuthURL, getTokens } from "./oauth/oauth";
+import {
+  REDIRECT_URI,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  SERVER_ROOT_URI,
+  COOKIE_NAME,
+  UI_ROOT_URI,
+  JWT_SECRET,
+} from "./config";
 import axios from "axios";
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 AppDataSource.initialize()
   .then(() => {
@@ -21,13 +29,13 @@ const app = express();
 const port = 4000;
 app.use(bodyParser.json());
 
-/* generates url for  */
-app.get("/notesapp/auth/google/url", (req:Request, res:Response) => {
+/* generates url for google login */
+app.get("/notesapp/auth/google/url", (req: Request, res: Response) => {
   return res.redirect(getGoogleAuthURL());
 });
 
-/* getting the token and setting the cookies to frontend */
-app.get(`/${REDIRECT_URI}`, async (req:any, res:any) => {
+/* logging in google user if not present in database new user will be created */
+app.get(`/${REDIRECT_URI}`, async (req: any, res: any) => {
   const code = req.query.code;
 
   const { id_token, access_token } = await getTokens({
@@ -52,15 +60,26 @@ app.get(`/${REDIRECT_URI}`, async (req:any, res:any) => {
       throw new Error(error.message);
     });
 
-  const token = jwt.sign(googleUser, JWT_SECRET);
-
-  res.cookie(COOKIE_NAME, token, {
-    maxAge: 900000,
-    httpOnly: true,
-    secure: false,
+  const { name, email } = googleUser;
+  const userExists = await AppDataSource.getRepository(User).findOneBy({
+    email: email,
   });
 
-  res.redirect(UI_ROOT_URI);
+  if (!userExists) {
+    const nameArray = name.split(" ");
+    const user: User = new User();
+    user.email = email;
+    user.fname = nameArray[0];
+    user.lname = nameArray[1];
+    user.password = "temppassword"; //used for temprary user creation with password later reset link will be send to user
+    const results = await AppDataSource.getRepository(User).save(user);
+
+    const token = jwt.sign(results.user_id, JWT_SECRET);
+    return res.send(token);
+  }
+
+  const token = jwt.sign(userExists.user_id, JWT_SECRET);
+  return res.send(token);
 });
 
 /* signup user */
@@ -83,6 +102,34 @@ app.post("/notesapp/signup", async function (req: Request, res: Response) {
   user.password = password;
   const results = await AppDataSource.getRepository(User).save(user);
   return res.status(201).send(results);
+});
+
+/*user login*/
+app.get("/notesapp/login", async function (req: Request, res: Response) {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.send("enter your email");
+  }
+
+  if (!password) {
+    return res.send("enter your password");
+  }
+
+  const user = await AppDataSource.getRepository(User).findOneBy({
+    email: email,
+  });
+
+  if (!user) {
+    return res.send("wrong email");
+  }
+
+  if (user.password != password) {
+    return res.send("wrong password");
+  }
+
+  const token = jwt.sign(user.user_id, JWT_SECRET);
+  return res.send(token);
 });
 
 /* get user detail by id*/
@@ -144,7 +191,6 @@ app.get("/notesapp/notes/:id", async function (req: Request, res: Response) {
   const results = await AppDataSource.getRepository(Note).findBy({
     userId: req.params.id,
   });
-  console.log(results);
   if (results.length < 1) {
     return res.send({ status: false, message: "notes not found" });
   }
