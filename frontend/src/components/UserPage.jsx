@@ -9,7 +9,7 @@ export function UserPage() {
       <div class="pt-20">
         <Navbar/>
       </div>
-      <div class="grid grid-cols-1 gap-4 place-items-center">
+      <div class="grid grid-cols-1 gap-4 place-items-center p-3">
         <Note />
         <Note />
         <Note />

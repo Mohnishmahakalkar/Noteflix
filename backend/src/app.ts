@@ -5,6 +5,9 @@ import { Note } from "./database/entity/note.entity";
 import { User } from "./database/entity/user.entity";
 import bodyParser from "body-parser";
 import { getGoogleAuthURL, getTokens } from "./oauth/oauth";
+const cors = require("cors");
+const app = express();
+app.use(cors());
 import {
   REDIRECT_URI,
   GOOGLE_CLIENT_ID,
@@ -25,13 +28,12 @@ AppDataSource.initialize()
     console.error("Error during Data Source initialization:", err);
   });
 
-const app = express();
 const port = 4000;
 app.use(bodyParser.json());
 
 /* generates url for google login */
 app.get("/notesapp/auth/google/url", (req: Request, res: Response) => {
-  return res.redirect(getGoogleAuthURL());
+  return res.send(getGoogleAuthURL());
 });
 
 /* logging in google user if not present in database new user will be created */

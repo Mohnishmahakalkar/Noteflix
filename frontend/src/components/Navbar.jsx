@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "../logo/notess.png"
 
 export function Navbar() {
   return (
@@ -6,12 +7,12 @@ export function Navbar() {
       <div class="container flex flex-wrap items-center justify-between mx-auto">
         <a href="localhoast:3000/" class="flex items-center">
           <img
-            src="https://www.freepnglogos.com/uploads/note-png/note-change-website-articles-fliers-posting-guidelines-30.png"
-            class="h-6 sm:h-9" 
+            src={logo}
+            class="h-6 sm:h-9 pr-2" 
             alt="Notes Logo"
           />
           <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-            Noteflix
+            Notestick
           </span>
         </a>
         <div class="flex md:order-2">
