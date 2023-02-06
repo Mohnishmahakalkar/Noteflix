@@ -31,6 +31,11 @@ AppDataSource.initialize()
 const port = 4000;
 app.use(bodyParser.json());
 
+/*hello world*/
+app.get("/helloworld", (req: Request, res: Response) => {
+  return res.send("hello World");
+});
+
 /* generates url for google login */
 app.get("/notesapp/auth/google/url", (req: Request, res: Response) => {
   return res.send(getGoogleAuthURL());
@@ -77,11 +82,24 @@ app.get(`/${REDIRECT_URI}`, async (req: any, res: any) => {
     const results = await AppDataSource.getRepository(User).save(user);
 
     const token = jwt.sign(results.user_id, JWT_SECRET);
-    return res.send(token);
+    res.cookie(COOKIE_NAME, token, {
+      maxAge: 900000,
+      httpOnly: true,
+      secure: false,
+    });
+
+    res.redirect(UI_ROOT_URI);
   }
 
-  const token = jwt.sign(userExists.user_id, JWT_SECRET);
-  return res.send(token);
+  const token = jwt.sign(userExists?.user_id, JWT_SECRET);
+
+  res.cookie(COOKIE_NAME, token, {
+    maxAge: 900000,
+    httpOnly: true,
+    secure: false,
+  });
+
+  res.redirect(UI_ROOT_URI);
 });
 
 /* signup user */
@@ -107,7 +125,7 @@ app.post("/notesapp/signup", async function (req: Request, res: Response) {
 });
 
 /*user login*/
-app.get("/notesapp/login", async function (req: Request, res: Response) {
+app.post("/login", async function (req: Request, res: Response) {
   const { email, password } = req.body;
 
   if (!email) {
@@ -131,7 +149,10 @@ app.get("/notesapp/login", async function (req: Request, res: Response) {
   }
 
   const token = jwt.sign(user.user_id, JWT_SECRET);
-  return res.send(token);
+
+  const data = { token: { token }, UI_ROOT_URI };
+
+  return res.send(data);
 });
 
 /* get user detail by id*/
@@ -170,9 +191,9 @@ app.put("/notesapp/user/:id", async function (req: Request, res: Response) {
       updateUser
     );
 
-    res.send("user data updated");
+    return res.send("user data updated");
   } else {
-    res.send("user not found");
+    return res.send("user not found");
   }
 });
 
@@ -185,7 +206,7 @@ app.delete("/notesapp/user/:id", async function (req: Request, res: Response) {
   const deletedUser = await AppDataSource.getRepository(User).delete({
     user_id: Number(ID),
   });
-  res.send("user and notes for that user deleted");
+  return res.send("user and notes for that user deleted");
 });
 
 /* get all notes for user with ID */
@@ -224,7 +245,7 @@ app.delete(
     const deletedNotes = await AppDataSource.getRepository(Note).delete({
       note_id: parseInt(req.params.notesId),
     });
-    res.send(deletedNotes);
+    return res.send(deletedNotes);
   }
 );
 

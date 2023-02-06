@@ -1,29 +1,28 @@
 import React from "react";
 export function Note() {
   return (
-    <div class="flex flex-col max-w-2xl p-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <div class="flex flex-row my-2">
-        <h5 class="w-full pl-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-          Note name
-        </h5>
-        <button class="">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-          </svg>
-        </button>
-      </div>
+    <div className="flex flex-row w-3/5 p-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex flex-col w-full">
+        <div className="flex flex-row ">
+          <div className="w-full pl-1 py-3 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            <input type="text" className="focus:outline-none" placeholder="Note Name ..."/>
+          </div>
+          <div>
+          <button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-6 h-6 pt-1"
+            >
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+          </button>
+          </div>
+        </div>
 
-      <p class="mb-3 p-1 font-normal text-gray-500 dark:text-gray-400">
-        Go to this step by step guideline process on how to certify for your
-        weekly benefits:Go to this step by step guideline process on how to
-        certify for your weekly benefits:Go to this step by step guideline
-        process on how to certify for your weekly benefits:
-      </p>
+        <textarea rows="4" className="resize-none px-1 pt-2 rounded-md focus:outline-none font-semibold" placeholder="Note ..."></textarea>
+      </div>
     </div>
   );
 }
