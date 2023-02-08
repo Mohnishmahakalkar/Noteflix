@@ -9,6 +9,10 @@ export function Note(props) {
     props.changer(props.obj.note_id);
   }
 
+  async function updatenotes(){
+    
+  }
+
   return (
     <div className="flex flex-row w-3/5 p-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <div className="flex flex-col w-full">

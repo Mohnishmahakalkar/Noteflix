@@ -1,8 +1,8 @@
 import "./css/index.css";
 import { Routes, Route} from "react-router-dom";
-import { UserPage } from "./components/UserPage";
-import { LoginPage } from "./components/LoginPage";
-import { RegistrationPage } from "./components/RegistrationPage";
+import { UserPage } from "./components/Userpage/UserPage";
+import { LoginPage } from "./components/Loginpage/LoginPage";
+import { RegistrationPage } from "./components/Register page/RegistrationPage";
 function App() {
   return (
     <>

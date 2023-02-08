@@ -1,5 +1,6 @@
-import { Note } from "./Note";
-import { Footer } from "./Footer";
+import { Note } from "../Userpage/Note";
+import { Footer } from "../Footer";
+import { AddNewNote } from "../Userpage/AddNewNote";
 import { UserNavbar } from "./UserNavbar";
 import { useJwt } from "react-jwt";
 import axios from "axios";
@@ -14,18 +15,13 @@ export function UserPage() {
   const [Notes, setNotes] = useState([]);
   const [changer, setChanger] = useState();
 
-
   useEffect(() => {
     const getUser = async () => {
-
-      console.log("calling get user")
       const user = await axios.get(
         `http://localhost:4000/notesapp/user/${userId}`
       );
 
       setUserName(`${user.data.fname} ${user.data.fname}`);
-
-      console.log("Fetching notes")
 
       const notes = await axios.get(
         `http://localhost:4000/notesapp/notes/${userId}`
@@ -44,8 +40,16 @@ export function UserPage() {
       </div>
       <div className="grid grid-cols-1 gap-4 place-items-center p-3">
         {Notes.length > 0
-          ? Notes.map((note) => <Note key={note.note_id} obj={note} changer={setChanger} />)
+          ? Notes.map((note) => (
+              <Note
+                key={note.note_id}
+                obj={note}
+                changer={setChanger}
+                userid={userId}
+              />
+            ))
           : null}
+        <AddNewNote changer={setChanger} userid={userId} />
       </div>
       <div className="">
         <Footer />

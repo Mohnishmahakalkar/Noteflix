@@ -1,7 +1,7 @@
 import React from "react";
-import { Navbar } from "./Navbar";
-import { Footer } from "./Footer";
-import logo from "../logo/notess.png"
+import { Navbar } from "../Navbar";
+import { Footer } from "../Footer";
+import logo from "../../logo/notess.png"
 
 export function RegistrationPage() {
   return (

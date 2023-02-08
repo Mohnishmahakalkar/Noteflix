@@ -234,11 +234,15 @@ app.post(
   }
 );
 
+/*update existing notes*/
+app.post("/notes/:noteid", async function (req: Request, res: Response) {
+  const { note, status, noteName } = req.body;
+});
+
 /*delete notes for user*/
 app.delete(
   "/notesapp/notes/:notesId",
   async function (req: Request, res: Response) {
-    console.log(req.params.notesId , "req.params.notesId")
     const deletedNotes = await AppDataSource.getRepository(Note).delete({
       note_id: parseInt(req.params.notesId),
     });
