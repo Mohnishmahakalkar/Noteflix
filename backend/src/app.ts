@@ -36,11 +36,6 @@ app.get("/helloworld", (req: Request, res: Response) => {
   return res.send("hello World");
 });
 
-/* generates url for google login */
-app.get("/notesapp/auth/google/url", (req: Request, res: Response) => {
-  return res.send(getGoogleAuthURL());
-});
-
 /* logging in google user if not present in database new user will be created */
 app.get(`/${REDIRECT_URI}`, async (req: any, res: any) => {
   const code = req.query.code;
@@ -215,18 +210,19 @@ app.get("/notesapp/notes/:id", async function (req: Request, res: Response) {
     userId: req.params.id,
   });
   if (results.length < 1) {
-    return res.send({ status: false, message: "notes not found" });
+    return res.send({ message: "notes not found" });
   }
-  return res.send({ status: true, data: results });
+  return res.send(results);
 });
 
 /*add notes for user*/
 app.post(
   "/notesapp/notes/:userId",
   async function (req: Request, res: Response) {
-    const { note, status } = req.body;
+    const { note, status, noteName } = req.body;
 
     const createNote: Note = new Note();
+    createNote.noteName = noteName;
     createNote.note = note;
     createNote.status = status;
     createNote.userId = req.params.userId;
@@ -242,6 +238,7 @@ app.post(
 app.delete(
   "/notesapp/notes/:notesId",
   async function (req: Request, res: Response) {
+    console.log(req.params.notesId , "req.params.notesId")
     const deletedNotes = await AppDataSource.getRepository(Note).delete({
       note_id: parseInt(req.params.notesId),
     });

@@ -13,6 +13,9 @@ export class Note {
   note_id: number;
 
   @Column()
+  noteName : string;
+
+  @Column()
   note: string;
 
   @Column()
