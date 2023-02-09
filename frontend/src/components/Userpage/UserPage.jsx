@@ -6,22 +6,23 @@ import { useJwt } from "react-jwt";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import Cookies from "universal-cookie";
 
 export function UserPage() {
-  const token = localStorage.getItem("token");
-  const TokenVal = useJwt(token);
-  const userId = Number(TokenVal.decodedToken);
   const [UserName, setUserName] = useState(null);
   const [Notes, setNotes] = useState([]);
   const [changer, setChanger] = useState();
-
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const TokenVal = useJwt(token);
+  const userId = Number(TokenVal.decodedToken);
   useEffect(() => {
     const getUser = async () => {
       const user = await axios.get(
         `http://localhost:4000/notesapp/user/${userId}`
       );
 
-      setUserName(`${user.data.fname} ${user.data.fname}`);
+      setUserName(`${user.data.fname} ${user.data.lname}`);
 
       const notes = await axios.get(
         `http://localhost:4000/notesapp/notes/${userId}`

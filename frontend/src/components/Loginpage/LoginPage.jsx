@@ -4,7 +4,9 @@ import { Footer } from "../Footer";
 import logo from "../../logo/notess.png";
 import { useState } from "react";
 import axios from "axios";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
   let data =
@@ -13,6 +15,15 @@ export function LoginPage() {
   const [email, setemail] = useState("");
   const [pass, setpass] = useState("");
   const error = useRef(null);
+  const cookies = new Cookies();
+  const Nav = useNavigate();
+
+  useEffect(() => {
+    const data = cookies.get("token");
+    if (data) {
+      Nav("/notesapp");
+    }
+  });
 
   const inputmail = (event) => {
     setemail(event.target.value);
@@ -22,6 +33,10 @@ export function LoginPage() {
     setpass(event.target.value);
   };
 
+  function goToRegister() {
+    Nav("/register");
+  }
+
   async function login(event) {
     event.preventDefault();
     error.value = null;
@@ -30,28 +45,15 @@ export function LoginPage() {
       password: pass,
     });
 
-    if (!user.data.token) {
-      error.value = " no token found";
-    }
-
-    if (!user.data.UI_ROOT_URI) {
-      error.value = "authentication failed";
-    }
-
-    if (!error.value) {
-      if (
-        user.data.UI_ROOT_URI === "http://localhost:3000/notesapp" &&
-        user.data.token
-      ) {
-        localStorage.setItem("token", user.data.token.token);
-        window.location = "/notesapp";
-      } 
-    }
+    cookies.set("token", user.data);
+    cookies.set("isloggedin", true);
+    Nav("/notesapp");
+    
   }
   return (
     <div className="place-items-center">
       <div>
-        <Navbar showSignUp='true' />
+        <Navbar showSignUp="true" />
       </div>
       <div>
         <div className="bg-gray-50 dark:bg-gray-900">
@@ -130,12 +132,12 @@ export function LoginPage() {
                   </div>
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                     Don’t have an account yet?{" "}
-                    <a
-                      href="../register/"
+                    <button
+                      onClick={goToRegister}
                       className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                     >
                       Sign up
-                    </a>
+                    </button>
                   </p>
                 </div>
               </form>

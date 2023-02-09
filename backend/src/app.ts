@@ -4,7 +4,7 @@ import { AppDataSource } from "./database/datasource";
 import { Note } from "./database/entity/note.entity";
 import { User } from "./database/entity/user.entity";
 import bodyParser from "body-parser";
-import { getGoogleAuthURL, getTokens } from "./oauth/oauth";
+import { getTokens } from "./oauth/oauth";
 const cors = require("cors");
 const app = express();
 app.use(cors());
@@ -73,28 +73,23 @@ app.get(`/${REDIRECT_URI}`, async (req: any, res: any) => {
     user.email = email;
     user.fname = nameArray[0];
     user.lname = nameArray[1];
-    user.password = "temppassword"; //used for temprary user creation with password later reset link will be send to user
-    const results = await AppDataSource.getRepository(User).save(user);
-
-    const token = jwt.sign(results.user_id, JWT_SECRET);
-    res.cookie(COOKIE_NAME, token, {
-      maxAge: 900000,
-      httpOnly: true,
-      secure: false,
+    user.password = "temppass";
+    await AppDataSource.getRepository(User).save(user);
+    const FindAddedUser = await AppDataSource.getRepository(User).findOneBy({
+      email: email,
     });
 
-    res.redirect(UI_ROOT_URI);
-  }
+    const token = jwt.sign(FindAddedUser?.user_id, JWT_SECRET);
 
+    res.cookie(COOKIE_NAME, token);
+    res.cookie("isloggedin", true);
+    return res.redirect(UI_ROOT_URI);
+  }
   const token = jwt.sign(userExists?.user_id, JWT_SECRET);
 
-  res.cookie(COOKIE_NAME, token, {
-    maxAge: 900000,
-    httpOnly: true,
-    secure: false,
-  });
-
-  res.redirect(UI_ROOT_URI);
+  res.cookie(COOKIE_NAME, token);
+  res.cookie("isloggedin", true);
+  return res.redirect(UI_ROOT_URI);
 });
 
 /* signup user */
@@ -106,7 +101,7 @@ app.post("/notesapp/signup", async function (req: Request, res: Response) {
   });
 
   if (checkEmail) {
-    res
+    return res
       .status(409)
       .send({ status: false, message: "email is already register" });
   }
@@ -145,9 +140,7 @@ app.post("/login", async function (req: Request, res: Response) {
 
   const token = jwt.sign(user.user_id, JWT_SECRET);
 
-  const data = { token: { token }, UI_ROOT_URI };
-
-  return res.send(data);
+  return res.send(token);
 });
 
 /* get user detail by id*/

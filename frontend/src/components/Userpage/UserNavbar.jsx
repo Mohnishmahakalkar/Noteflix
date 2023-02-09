@@ -1,11 +1,14 @@
 import React from "react";
 import logo from "../../logo/notess.png";
 import { useNavigate } from "react-router-dom";
+import  Cookies  from "universal-cookie";
 
 export function UserNavbar(prop) {
   const navigate = useNavigate();
+  const cookies = new Cookies();
   function logout() {
-    window.localStorage.clear();
+    cookies.remove("token")
+    cookies.remove("isloggedin")
     navigate("/");
   }
   return (
