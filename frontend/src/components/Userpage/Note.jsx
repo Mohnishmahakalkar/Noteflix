@@ -1,7 +1,19 @@
 import React from "react";
 import axios from "axios";
+import { useState } from "react";
 
 export function Note(props) {
+  const [noteName, setnoteName] = useState("");
+  const [note, setnote] = useState("");
+
+  const inputNoteName = (event) => {
+    setnoteName(event.target.value);
+  };
+
+  const inputNote = (event) => {
+    setnote(event.target.value);
+  };
+
   async function deleteNote() {
     await axios.delete(
       `http://localhost:4000/notesapp/notes/${props.obj.note_id}`
@@ -9,8 +21,14 @@ export function Note(props) {
     props.changer(props.obj.note_id);
   }
 
-  async function updatenotes(){
-    
+  async function updatenotes() {
+    await axios.post(
+      `http://localhost:4000/updatenotes/${props.obj.note_id}`,
+      {
+        noteName: noteName,
+        note: note,
+      }
+    );
   }
 
   return (
@@ -22,6 +40,8 @@ export function Note(props) {
               type="text"
               className="focus:outline-none w-3/4"
               placeholder="Note Name ..."
+              onChange={inputNoteName}
+              onBlur={updatenotes}
               defaultValue={props.obj.noteName}
             />
           </div>
@@ -43,6 +63,8 @@ export function Note(props) {
           rows="4"
           className="resize-none px-1 pt-2 rounded-md focus:outline-none font-semibold"
           placeholder="Note ..."
+          onChange={inputNote}
+          onBlur={updatenotes}
           defaultValue={props.obj.note}
         ></textarea>
       </div>

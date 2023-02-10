@@ -228,8 +228,22 @@ app.post(
 );
 
 /*update existing notes*/
-app.post("/notes/:noteid", async function (req: Request, res: Response) {
+app.post("/updatenotes/:noteid", async function (req: Request, res: Response) {
   const { note, status, noteName } = req.body;
+  const noteid = parseInt(req.params.noteid);
+
+  const oldVals = await AppDataSource.getRepository(Note).findOneBy({
+    note_id: noteid,
+  });
+
+  const results = await AppDataSource.getRepository(Note)
+    .createQueryBuilder()
+    .update(Note)
+    .set({ note: note || oldVals?.note, status: status || oldVals?.status, noteName: noteName || oldVals?.noteName })
+    .where({ note_id: noteid })
+    .execute();
+
+  return res.send(results);
 });
 
 /*delete notes for user*/
@@ -243,6 +257,7 @@ app.delete(
   }
 );
 
+/*main function */
 function main() {
   app.listen(port, () => {
     console.log(`App listening http://localhost:${port}`);
