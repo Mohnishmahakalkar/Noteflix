@@ -13,16 +13,16 @@ export function UserNavbar(prop) {
   }
   return (
     <nav className="bg-slate-100 px-2 py-2.5 dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
-      <div className="container flex flex-wrap items-center justify-between mx-auto">
+      <div className="container flex flex-row items-center justify-between mx-auto">
         <div className="order-1">
           <a href="./" className="flex items-center">
             <img src={logo} className="h-6 sm:h-9 pr-2" alt="Notes Logo" />
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+            <span className="self-center text-xl font-semibold dark:text-white">
               Notestick
             </span>
           </a>
         </div>
-        <div className="order-2 self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+        <div className="flex invisible order-2 self-center text-xl font-semibold dark:text-white md:visible">
           {prop.username || "username"}
         </div>
         <div className="flex order-3">

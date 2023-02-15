@@ -32,9 +32,9 @@ export function Note(props) {
   }
 
   return (
-    <div className="flex flex-row w-3/5 p-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div className="flex flex-row w-3/4 p-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:w-3/5">
       <div className="flex flex-col w-full">
-        <div className="flex flex-row ">
+        <div className="flex flex-row">
           <div className="w-full pl-1 py-3 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
             <input
               type="text"
